@@ -1,6 +1,6 @@
 SensorSocket
 ==
-
+[![Build Status](https://travis-ci.org/RaedsLab/SensorSocket.svg)](https://travis-ci.org/RaedsLab/SensorSocket)
 #TODO
 * Design a client struct
 * Implement the announcment to the server

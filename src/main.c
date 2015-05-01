@@ -8,6 +8,6 @@
 
 int main()
 {
-
-	exit(EXIT_SUCCESS);	
+    printf("Hello");
+	exit(EXIT_SUCCESS);
 }

@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1431169352 source:/home/r3d/code/SensorSocket/src/ip.c
+	<stdio.h>
+	<unistd.h>
+	<string.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<sys/ioctl.h>
+	<netinet/in.h>
+	<net/if.h>
+	<arpa/inet.h>
+
+1431170577 source:/home/r3d/code/SensorSocket/src/main.c
+	<stdio.h>
+	<netdb.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<string.h>
+	<unistd.h>
+	<stdlib.h>
+	"main.h"
+
+1431170625 /home/r3d/code/SensorSocket/src/main.h
+

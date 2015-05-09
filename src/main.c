@@ -16,10 +16,10 @@ struct Sensor
     char *actions[3]; // an array with lables for the actions of the sensor
 };
 
-
+/*
 
 int main()
 {
     printf("Hello");
 	exit(EXIT_SUCCESS);
-}
+} */

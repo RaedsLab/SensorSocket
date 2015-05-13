@@ -121,6 +121,7 @@ int main(void)
     {
         if (recvfrom(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, &slen)==-1)
         {
+            printf("error");
             diep("recvfrom()");
         }
         printf("%s", buf);

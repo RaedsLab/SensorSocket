@@ -13,7 +13,7 @@
 #define BUFLEN 512
 #define NPACK 10
 #define PORT 9930
-#define SRV_IP "192.168.203.113" // UPDATE VALUE FOR NEW SERVER IP
+#define SRV_IP "172.16.169.67" // UPDATE VALUE FOR NEW SERVER IP
 
 #define CAP_NAME "Humidity Sensor";
 

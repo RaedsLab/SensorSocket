@@ -63,12 +63,6 @@ int getTemp()
     return r;
 }
 
-
-int setTemp(int t)
-{
-    return t;
-}
-
 ////////////
 void diep(char *s)
 {
@@ -88,7 +82,6 @@ int main(void)
     struct Sensor *mySensor = createSensor();
     mySensor->label = CAP_NAME;
     mySensor->actions[0] = "GetTemp";
-    mySensor->actions[1] = "SetTemp";
 
     char* msg;
     msg = malloc(512);
@@ -110,7 +103,7 @@ int main(void)
     if(firstRun!=0)
     {
         printf("FIRST RUN \n");
-	printf("%s", mySensor->label);
+        printf("%s", mySensor->label);
         firstRun =0;
         //SEND INITIAL DISVOVERY MESSAGE
         if (sendto(s, msg, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)

@@ -7,10 +7,14 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h> /* memset */
+#include <stdlib.h>
 
 #define BUFLEN 512
 #define NPACK 10
 #define PORT 9930
+#define N 3
+
+#define SHMSZ 1024
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -60,40 +64,48 @@ char** str_split(char* a_str, const char a_delim)
     return result;
 }
 
-
-
-
-struct Capteur
+struct Sensor
 {
     char* ip;
-    int port;
+    char* port;
     char* label;
-    char *actions[3];
+    char* actions[3];
 };
 
-struct Capteur *createCapteur(char * msg)
+struct Sensor sensors[N];
+
+// EMPTY SENSOR
+struct Sensor *newSensor()
 {
-    struct Capteur *monCapteur = malloc(sizeof(struct Capteur));
-    assert(monCapteur != NULL);
+    struct Sensor *mySensor = malloc(sizeof(struct Sensor));
+    assert(mySensor != NULL);
+    return mySensor;
+}
+
+// PORT NEED TO CHANGE AND GET CASTED
+struct Sensor *createSensor(char * msg, char * ip, int port)
+{
+
+    struct Sensor *mySensor = malloc(sizeof(struct Sensor));
+    assert(mySensor != NULL);
+
+    mySensor->ip = ip;
+
     char** tokens;
     tokens = str_split(msg, '#');
 
     if (tokens)
     {
+        mySensor->label = *(tokens +0);
+        mySensor->actions[0] = *(tokens +1);
+        mySensor->actions[1] = *(tokens +2);
+        mySensor->actions[2] = *(tokens +3);
 
-    monCapteur->label=*(tokens +0);
-    monCapteur->actions[0]=*(tokens +1);
-    monCapteur->actions[1]=*(tokens +2);
-    monCapteur->actions[3]=*(tokens +3);
-
-    free(tokens);
+        free(tokens);
     }
 
-
-
-    return monCapteur;
+    return mySensor;
 }
-
 
 void diep(char *s)
 {
@@ -103,8 +115,21 @@ void diep(char *s)
 
 int main(void)
 {
+
+    int shmid;
+    key_t key;
+    struct Sensor *shm = newSensor();
+    struct Sensor *tmp = newSensor();
+    /////
     struct sockaddr_in si_me, si_other;
     int s, i, slen=sizeof(si_other);
+    int index ; //Shared var
+
+    //structure de la mémoire partagée
+    //les variables à partager : int index, sturct sensors
+
+
+
     char buf[BUFLEN];
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
@@ -124,13 +149,27 @@ int main(void)
             printf("error");
             diep("recvfrom()");
         }
-        printf("%s", buf);
 
-        /*printf("Received packet from %s:%d\nData: %s\n\n",
-               inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);*/
-            struct Capteur *monCapteur = createCapteur(buf);
+        struct Sensor *mySensor = createSensor(buf,inet_ntoa(si_other.sin_addr),ntohs(si_other.sin_port));
 
-        printf("TEST : %s ",monCapteur->label);
+
+        for(i=0; i<N; i++)
+        {
+            if(sensors[i].label == NULL)
+            {
+                sensors[i].ip = mySensor->ip;
+                sensors[i].port = mySensor->port;
+                sensors[i].label = mySensor->label;
+                sensors[i].actions[0] = mySensor->actions[0];
+                sensors[i].actions[1] = mySensor->actions[1];
+                sensors[i].actions[2] = mySensor->actions[2];
+                index++;
+                break;
+            }
+        }
+
+        printf("Received packet from %s:%d\nData: %s\n\n",
+               inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
     }
 
     close(s);

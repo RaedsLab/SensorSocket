@@ -13,7 +13,7 @@
 #define BUFLEN 512
 #define NPACK 10
 #define PORT 9930
-#define SRV_IP "172.16.169.67" // UPDATE VALUE FOR NEW SERVER IP
+#define SRV_IP "192.168.203.113" // UPDATE VALUE FOR NEW SERVER IP
 
 #define CAP_NAME "Temperature Sensor";
 
@@ -27,10 +27,10 @@ struct Sensor *createSensor()
 {
     struct Sensor *mySensor = malloc(sizeof(struct Sensor));
     assert(mySensor != NULL);
-    monCapteur->label = "";
-    monCapteur->actions[0] = "ServiceNotAvailable";
-    monCapteur->actions[1] = "ServiceNotAvailable";
-    monCapteur->actions[2] = "ServiceNotAvailable";
+    mySensor->label = "";
+    mySensor->actions[0] = "ServiceNotAvailable";
+    mySensor->actions[1] = "ServiceNotAvailable";
+    mySensor->actions[2] = "ServiceNotAvailable";
 
     return mySensor;
 }
@@ -85,15 +85,15 @@ int main(void)
     //TEST IF First RUN
     int firstRun = 1;
     //VARS FOR SENSOR
-    struct Capteur *monCapteur = createCapteur();
-    monCapteur->label = "Capteur Tmp";
-    monCapteur->actions[0] = "GetTemp";
-    monCapteur->actions[1] = "SetTemp";
+    struct Sensor *mySensor = createSensor();
+    mySensor->label = CAP_NAME;
+    mySensor->actions[0] = "GetTemp";
+    mySensor->actions[1] = "SetTemp";
 
     char* msg;
     msg = malloc(512);
 
-    msg = getInitialMessage(monCapteur);
+    msg = getInitialMessage(mySensor);
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -110,6 +110,7 @@ int main(void)
     if(firstRun!=0)
     {
         printf("FIRST RUN \n");
+	printf("%s", mySensor->label);
         firstRun =0;
         //SEND INITIAL DISVOVERY MESSAGE
         if (sendto(s, msg, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)

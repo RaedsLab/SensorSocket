@@ -10,63 +10,51 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include <stdbool.h> /* bool */
+
 #define BUFLEN 512
 #define NPACK 10
 #define PORT 9930
-#define SRV_IP "172.16.169.67" // UPDATE VALUE FOR NEW SERVER IP
+#define SRV_IP "192.168.203.113" // UPDATE VALUE FOR NEW SERVER IP
 
-#define CAP_NAME "Capteur temp";
+#define CAP_NAME "Infrared Sensor";
 
-struct Capteur
+struct Sensor
 {
     char* label; // Display name
     char *actions[3]; // an array with lables for the actions of the sensor
 };
 
-struct Capteur *createCapteur()
+struct Sensor *createSensor()
 {
-    struct Capteur *monCapteur = malloc(sizeof(struct Capteur));
-    assert(monCapteur != NULL);
-    monCapteur->label="";
-    monCapteur->actions[0] = "ServiceNotAvailable";
-    monCapteur->actions[1] = "ServiceNotAvailable";
-    monCapteur->actions[2] = "ServiceNotAvailable";
+    struct Sensor *mySensor = malloc(sizeof(struct Sensor));
+    assert(mySensor != NULL);
+    mySensor->label = "";
+    mySensor->actions[0] = "ServiceNotAvailable";
+    mySensor->actions[1] = "ServiceNotAvailable";
+    mySensor->actions[2] = "ServiceNotAvailable";
 
-    return monCapteur;
+    return mySensor;
 }
 
-char * getInitialMessage(struct Capteur *c)
+char * getInitialMessage(struct Sensor *s)
 {
     char* msg;
     msg = malloc(512);
-    strcpy(msg, c->label);
+    strcpy(msg, s->label);
     strcat(msg, "#");
-    strcat(msg, c->actions[0]);
+    strcat(msg, s->actions[0]);
     strcat(msg, "#");
-    strcat(msg, c->actions[1]);
+    strcat(msg, s->actions[1]);
     strcat(msg, "#");
-    strcat(msg, c->actions[2]);
+    strcat(msg, s->actions[2]);
 
     return msg;
 }
 
-int getTemp()
+bool isActive()
 {
-    srand(time(NULL));
-
-    int r = 0;
-    do
-    {
-        r = rand();
-    }
-    while(r>45 || r<0);
-    return r;
-}
-
-
-int setTemp(int t)
-{
-    return t;
+    return true;
 }
 
 ////////////
@@ -85,15 +73,14 @@ int main(void)
     //TEST IF First RUN
     int firstRun = 1;
     //VARS FOR SENSOR
-    struct Capteur *monCapteur = createCapteur();
-    monCapteur->label = "Capteur Tmp";
-    monCapteur->actions[0] = "GetTemp";
-    monCapteur->actions[1] = "SetTemp";
+    struct Sensor *mySensor = createSensor();
+    mySensor->label = CAP_NAME;
+    mySensor->actions[0] = "isActive";
 
     char* msg;
     msg = malloc(512);
 
-    msg = getInitialMessage(monCapteur);
+    msg = getInitialMessage(mySensor);
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -110,6 +97,7 @@ int main(void)
     if(firstRun!=0)
     {
         printf("FIRST RUN \n");
+	printf("%s", mySensor->label);
         firstRun =0;
         //SEND INITIAL DISVOVERY MESSAGE
         if (sendto(s, msg, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
